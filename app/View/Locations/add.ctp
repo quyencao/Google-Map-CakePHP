@@ -1,6 +1,7 @@
 <?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css'); ?>
 <?= $this->Html->script("http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js", false); ?>
 <?= $this->Html->script('http://maps.google.com/maps/api/js?key=AIzaSyALRT24edC7GaVGvOa8jABOvq4g1I20JZQ&libraries=places&sensor=true', false); ?>
+<?= $this->Html->script('jscolor.min'); ?>
 <div class="locations form container">
 <?php echo $this->Form->create('Location'); ?>
 	<fieldset>
@@ -19,6 +20,7 @@
 <?php
     echo $this->Form->button('Lưu địa điểm', array('type' => 'submit', 'class' => 'btn btn-primary add-location'));
 ?>
+    <button class="btn text-white jscolor {valueElement:null, value:'FE7569', onFineChange:'changeColorPin(this)'}">Chọn màu pin</button>
 </div>
 
 <script>
@@ -26,6 +28,7 @@
     var autocomplete;
     var infowindow;
     var markers = [];
+    var pinColor = "FE7569";
 
     function initialize()
     {
@@ -67,6 +70,8 @@
            map: map,
            animation: google.maps.Animation.DROP,
            draggable: true,
+           icon: getPinImage(),
+           color: pinColor
         });
 
         marker.addListener('click', function () {
@@ -86,6 +91,18 @@
         });
         infowindow.open(map, marker);
     }
+
+    function getPinImage() {
+        var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
+            new google.maps.Size(21, 34),
+            new google.maps.Point(0,0),
+            new google.maps.Point(10, 34));
+        return pinImage;
+    }
+
+    function changeColorPin(color) {
+        pinColor = color.toHEXString().substr(1);
+    }
     
     function addLocation(event) {
         event.preventDefault();
@@ -97,7 +114,8 @@
         for(var i = 0; i < markers.length; i++) {
             pins[i] = {
                 latitude: markers[i].internalPosition.lat(),
-                longitude: markers[i].internalPosition.lng()
+                longitude: markers[i].internalPosition.lng(),
+                color: markers[i].color
             }
         }
 

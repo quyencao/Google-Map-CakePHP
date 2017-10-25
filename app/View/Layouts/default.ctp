@@ -29,6 +29,11 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
         .navbar {
             width: 100%;
         }
+
+        .color {
+            width: 25px;
+            height: 25px;
+        }
     </style>
 	<?php
 		echo $this->Html->meta('icon');

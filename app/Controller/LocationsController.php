@@ -123,7 +123,7 @@ class LocationsController extends AppController
 		}
 		$this->request->allowMethod('post', 'delete');
 		if ($this->Location->delete()) {
-			$this->Flash->success(__('Địa điểm đã xóa.'));
+			$this->Flash->success(__('Địa điểm đã xóa thành công.'));
 		} else {
 			$this->Flash->error(__('The location could not be deleted. Please, try again.'));
 		}

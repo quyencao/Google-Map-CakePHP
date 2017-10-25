@@ -42,16 +42,17 @@
             placeMarker(map, {
                 lat: <?php echo $pin['latitude']; ?>,
                 lng: <?php echo $pin['longitude']; ?>
-            });
+            }, "<?php echo $pin['color']; ?>");
         <?php endforeach; ?>
     }
 
-    function placeMarker(map, location) {
+    function placeMarker(map, location, color) {
         var marker = new google.maps.Marker({
             position: location,
             map: map,
             animation: google.maps.Animation.DROP,
             draggable: true,
+            icon: getPinImage(color)
         });
 
         marker.addListener('click', function (event) {
@@ -64,6 +65,14 @@
 
            infowindow.open(map, marker);
         });
+    }
+
+    function getPinImage(color) {
+        var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + color,
+            new google.maps.Size(21, 34),
+            new google.maps.Point(0,0),
+            new google.maps.Point(10, 34));
+        return pinImage;
     }
 
     google.maps.event.addDomListener(window, 'load', initialize);

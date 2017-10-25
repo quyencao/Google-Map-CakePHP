@@ -4,7 +4,7 @@
 <?php if(count($locations) > 0): ?>
 <div class="locations index container">
 	<h2><?php echo __('Danh sách các địa điểm'); ?></h2>
-	<table cellpadding="0" cellspacing="0" class="table table-hover" style="min-height: 300px">
+	<table cellpadding="0" cellspacing="0" class="table table-hover">
 	<thead>
 	<tr>
 			<th><?php echo $this->Paginator->sort('id'); ?></th>
