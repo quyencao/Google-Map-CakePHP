@@ -68,14 +68,23 @@
            animation: google.maps.Animation.DROP,
            draggable: true,
         });
+
+        marker.addListener('click', function () {
+            createAndShowInfowindow(location, marker);
+        });
+
+        createAndShowInfowindow(location, marker);
+        markers.push(marker);
+    }
+    
+    function createAndShowInfowindow(location, marker) {
         if(infowindow) {
             infowindow.close();
         }
         infowindow = new google.maps.InfoWindow({
-            content: ''
+            content: '<h6>Vĩ độ: ' + location.lat() +  '</h6><h6>Kinh độ: ' + location.lng() +  '</h6>'
         });
         infowindow.open(map, marker);
-        markers.push(marker);
     }
     
     function addLocation(event) {

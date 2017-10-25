@@ -142,8 +142,6 @@
             }
         }
 
-        console.log(pins);
-
         $.ajax({
             type: 'POST',
             url: '/locations/edit/' + formData.get('data[Location][id]'),
