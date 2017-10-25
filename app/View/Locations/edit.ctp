@@ -25,7 +25,7 @@
 <script>
     var map;
     var autocomplete;
-    var infowindow;
+    var infowindow = new google.maps.InfoWindow();;
     var markers = [];
     var pins = {};
     var index = 1;
@@ -58,6 +58,14 @@
             });
         <?php endforeach; ?>
 
+        // Delete marker event
+        google.maps.event.addListener(infowindow, 'domready', function () {
+
+            $("#deleteMarker").click(function() {
+
+                deleteMarker($(this).data('id'));
+            });
+        });
     }
 
     function onPlaceChanged() {
@@ -74,11 +82,13 @@
     }
     
     function addMarker(map, location) {
+        var id = Date.now();
         var marker = new google.maps.Marker({
             position: location,
             map: map,
             animation: google.maps.Animation.DROP,
             draggable: true,
+            id: id
         });
 
         marker.addListener('dragend', function () {
@@ -86,10 +96,10 @@
         });
 
         marker.addListener('click', function (event) {
-            infowindow = addInfoWindow({
-               content: '<h5>Vĩ độ: ' + event.latLng.lat() +  '</h5><h5>Kinh độ: ' + event.latLng.lng() +  '</h5>' +
-               '<button type="button" class="btn btn-outline-danger clear-marker">Xóa</button>'
-            });
+            infowindow = setContentInfoWindow(
+                '<h5>Vĩ độ: ' + event.latLng.lat() +  '</h5><h5>Kinh độ: ' + event.latLng.lng() +  '</h5>'
+                + '<button id="deleteMarker" data-id="' + id + '" type="button" class="btn btn-outline-danger">Xóa</button>'
+            );
             infowindow.open(map, marker);
         });
 
@@ -98,11 +108,18 @@
         return marker;
     }
 
-    function addInfoWindow(content) {
+    function deleteMarker(id) {
+        var index = markers.findIndex((m) => m.id == id);
+        var marker = markers[index];
+        marker.setMap(null);
+        markers.splice(index, 1);
+    }
+
+    function setContentInfoWindow(content) {
         if(infowindow) {
             infowindow.close();
         }
-        infowindow = new google.maps.InfoWindow(content);
+        infowindow.setContent(content);
 
         return infowindow;
     }
@@ -151,10 +168,6 @@
     google.maps.event.addDomListener(window, 'load', initialize);
 
     $('#LocationAddForm').on('submit', addLocation);
-
-    $('.clear-marker').on('click', function () {
-
-    });
 
     $('#clear-markers').on('click', function () {
        for(var i = 0; i < markers.length; i++) {
