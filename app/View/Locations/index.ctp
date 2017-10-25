@@ -9,7 +9,7 @@
 	<tr>
 			<th><?php echo $this->Paginator->sort('id'); ?></th>
 			<th><?php echo $this->Paginator->sort('Địa chỉ'); ?></th>
-			<th><?php echo $this->Paginator->sort('Tung độ'); ?></th>
+			<th><?php echo $this->Paginator->sort('Vĩ độ'); ?></th>
 			<th><?php echo $this->Paginator->sort('Kinh độ'); ?></th>
 			<th class="actions"><?php echo __('Hành động'); ?></th>
 	</tr>

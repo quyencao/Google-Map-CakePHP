@@ -11,6 +11,7 @@
         </div>
 
         <?php
+        echo $this->Form->input('id', array('type' => 'hidden', 'value' => $location['Location']['id']));
         echo $this->Form->input('latitude', array('type' => 'hidden', 'value' => $location['Location']['latitude']));
         echo $this->Form->input('longitude', array('type' => 'hidden', 'value' => $location['Location']['longitude']));
         ?>
@@ -25,10 +26,9 @@
 <script>
     var map;
     var autocomplete;
-    var infowindow = new google.maps.InfoWindow();;
+    var infowindow = new google.maps.InfoWindow();
     var markers = [];
-    var pins = {};
-    var index = 1;
+//    var pins = {};
 
     function initialize()
     {
@@ -128,37 +128,36 @@
         var marker = addMarker(map, location);
     }
 
-    function addLocation(event) {
+    function updateLocation(event) {
         event.preventDefault();
 
-        var formData = new FormData($('#LocationAddForm')[0]);
+        var formData = new FormData($('#LocationEditForm')[0]);
 
         var pins = {};
 
         for(var i = 0; i < markers.length; i++) {
             pins[i] = {
-                location_id: <?php echo $location['Location']['id']; ?>,
                 latitude: markers[i].internalPosition.lat(),
                 longitude: markers[i].internalPosition.lng()
             }
         }
 
+        console.log(pins);
+
         $.ajax({
-            type: 'PUT',
-            url: '/locations/edit',
+            type: 'POST',
+            url: '/locations/edit/' + formData.get('data[Location][id]'),
             data: {
                 Location: {
-                    _method: 'PUT',
-                    id: <?php echo $location['Location']['id']; ?>,
+                    id: formData.get('data[Location][id]'),
                     address: formData.get('data[Location][address]'),
                     latitude: formData.get('data[Location][latitude]'),
-                    longitude: formData.get('data[Location][longitude]'),
+                    longitude: formData.get('data[Location][longitude]')
                 },
                 Pin: pins
             },
-            success: function (message) {
-                console.log(message);
-                if (message.status === 'SUCCESS') {
+            success: function (response) {
+                if (response.status === 'SUCCESS') {
                     window.location = '<?php echo $this->Html->url(array('controller' => 'locations', 'action' => 'index')); ?>';
                 }
             }
@@ -167,7 +166,7 @@
 
     google.maps.event.addDomListener(window, 'load', initialize);
 
-    $('#LocationAddForm').on('submit', addLocation);
+    $('#LocationEditForm').on('submit', updateLocation);
 
     $('#clear-markers').on('click', function () {
        for(var i = 0; i < markers.length; i++) {

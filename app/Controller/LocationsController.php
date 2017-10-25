@@ -67,7 +67,7 @@ class LocationsController extends AppController
                 $this->Flash->success(__('Địa điểm đã được lưu lại'));
                 $this->response->body(json_encode(array('status' => 'SUCCESS')));
             } else {
-                $this->Flash->error(__('Địa điểm không thể lưu lại. Hãy thử lại'));
+//                $this->Flash->error(__('Địa điểm không thể lưu lại. Hãy thử lại'));
                 $this->response->body(json_encode(array('status' => 'ERROR')));
             }
 
@@ -90,17 +90,14 @@ class LocationsController extends AppController
 		    $this->Location->id = $id;
 			if ($this->Location->save($this->request->data)) {
 			    $this->Location->Pin->deleteAll(array('location_id' => $id));
-//			    $insertQuery = "INSERT INTO pins (location_id,latitude,longitude) VALUES ";
-//			    for ($i = 0; $i < count($this->request->data['Pin']); $i++) {
-//			        $pin = $this->request->data['Pin'][$i];
-//			        if($i < count($this->request->data['Pin']) - 1) {
-//                        $insertQuery .= "(" . $pin['location_id'] . ", " . $pin['latitude'] . ", " . $pin['longitude'] . "), ";
-//                    } else {
-//                        $insertQuery .= "(" . $pin['location_id'] . ", " . $pin['latitude'] . ", " . $pin['longitude'] . ");";
-//                    }
-//                }
-				$this->Flash->success(__('The location has been saved.'));
-				return $this->redirect(array('action' => 'index'));
+                $this->Location->saveAssociated($this->request->data);
+				$this->Flash->success(__('Địa điểm ' . $this->request->data['Location']['address'] . ' được cập nhật thành công.'));
+
+				// Return json
+                $this->autoRender = false;
+                $this->response->type('json');
+                $this->response->body(json_encode(array('status' => 'SUCCESS')));
+                return $this->response;
 			} else {
 				$this->Flash->error(__('The location could not be saved. Please, try again.'));
 			}
@@ -126,7 +123,7 @@ class LocationsController extends AppController
 		}
 		$this->request->allowMethod('post', 'delete');
 		if ($this->Location->delete()) {
-			$this->Flash->success(__('The location has been deleted.'));
+			$this->Flash->success(__('Địa điểm đã xóa.'));
 		} else {
 			$this->Flash->error(__('The location could not be deleted. Please, try again.'));
 		}

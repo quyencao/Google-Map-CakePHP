@@ -25,8 +25,7 @@
     var map;
     var autocomplete;
     var infowindow;
-    var pins = {};
-    var index = 1;
+    var markers = [];
 
     function initialize()
     {
@@ -76,17 +75,22 @@
             content: ''
         });
         infowindow.open(map, marker);
-        pins[index] = {
-            latitude: location.lat(),
-            longitude: location.lng()
-        };
-        index++;
+        markers.push(marker);
     }
     
     function addLocation(event) {
         event.preventDefault();
 
         var formData = new FormData($('#LocationAddForm')[0]);
+
+        var pins = {};
+
+        for(var i = 0; i < markers.length; i++) {
+            pins[i] = {
+                latitude: markers[i].internalPosition.lat(),
+                longitude: markers[i].internalPosition.lng()
+            }
+        }
 
         $.ajax({
            type: 'POST',
