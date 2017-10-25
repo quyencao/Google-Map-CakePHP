@@ -50,10 +50,10 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavDropdown">
                     <ul class="navbar-nav">
-                        <li class="nav-item active">
+                        <li class="nav-item<?php echo $this->here == '/locations' ? ' active' : ''; ?>">
                             <a class="nav-link" href="/locations">Danh sách địa điểm <span class="sr-only">(current)</span></a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item<?php echo $this->here == '/locations/add' ? ' active' : ''; ?>">
                             <a class="nav-link" href="/locations/add">Thêm địa điểm</a>
                         </li>
                     </ul>

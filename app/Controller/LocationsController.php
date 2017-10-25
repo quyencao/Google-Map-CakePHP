@@ -50,7 +50,6 @@ class LocationsController extends AppController
         }
         $options = array('conditions' => array('Location.' . $this->Location->primaryKey => $id), 'recursive' => 1);
         $this->set('location', $this->Location->find('first', $options));
-//        $this->set('pin', $this->Location->Pin->find('all'));
     }
 
     /**
@@ -88,7 +87,18 @@ class LocationsController extends AppController
 			throw new NotFoundException(__('Invalid location'));
 		}
 		if ($this->request->is(array('post', 'put'))) {
+		    $this->Location->id = $id;
 			if ($this->Location->save($this->request->data)) {
+			    $this->Location->Pin->deleteAll(array('location_id' => $id));
+//			    $insertQuery = "INSERT INTO pins (location_id,latitude,longitude) VALUES ";
+//			    for ($i = 0; $i < count($this->request->data['Pin']); $i++) {
+//			        $pin = $this->request->data['Pin'][$i];
+//			        if($i < count($this->request->data['Pin']) - 1) {
+//                        $insertQuery .= "(" . $pin['location_id'] . ", " . $pin['latitude'] . ", " . $pin['longitude'] . "), ";
+//                    } else {
+//                        $insertQuery .= "(" . $pin['location_id'] . ", " . $pin['latitude'] . ", " . $pin['longitude'] . ");";
+//                    }
+//                }
 				$this->Flash->success(__('The location has been saved.'));
 				return $this->redirect(array('action' => 'index'));
 			} else {
@@ -96,7 +106,9 @@ class LocationsController extends AppController
 			}
 		} else {
 			$options = array('conditions' => array('Location.' . $this->Location->primaryKey => $id));
-			$this->request->data = $this->Location->find('first', $options);
+			$location = $this->Location->find('first', $options);
+			$this->request->data = $location;
+			$this->set('location', $location);
 		}
 	}
 

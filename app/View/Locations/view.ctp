@@ -26,13 +26,14 @@
 
 <script>
     var map;
+    var infowindow;
 
     function initialize()
     {
         var mapOptions = {
             center: new google.maps.LatLng(<?php echo $location['Location']['latitude']; ?>, <?php echo $location['Location']['longitude']; ?>),
             zoom: 15,
-//            mapTypeId: 'satellite'
+            mapTypeId: 'satellite'
         };
 
         map = new google.maps.Map(document.getElementById("map"),mapOptions);
@@ -51,6 +52,17 @@
             map: map,
             animation: google.maps.Animation.DROP,
             draggable: true,
+        });
+
+        marker.addListener('click', function (event) {
+           if(infowindow) {
+               infowindow.close();
+           }
+           infowindow =  new google.maps.InfoWindow({
+               content: '<h5>Vĩ độ: ' + event.latLng.lat() +  '</h5><h5>Kinh độ: ' + event.latLng.lng() +  '</h5>'
+           });
+
+           infowindow.open(map, marker);
         });
     }
 

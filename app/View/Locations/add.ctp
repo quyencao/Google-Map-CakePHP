@@ -32,8 +32,8 @@
     {
         var mapOptions = {
             center: new google.maps.LatLng(10.771971, 106.697845),
-            zoom: 8,
-//            mapTypeId: 'satellite'
+            zoom: 15,
+            mapTypeId: 'satellite'
         };
 
         map = new google.maps.Map(document.getElementById("map"),mapOptions);
@@ -100,7 +100,6 @@
                Pin: pins
            },
            success: function (message) {
-               console.log(message);
                if (message.status === 'SUCCESS') {
                     window.location = '<?php echo $this->Html->url(array('controller' => 'locations', 'action' => 'index')); ?>';
                }
