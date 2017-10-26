@@ -127,7 +127,7 @@
                 '<div class="collapse mt-2" id="collapse">' +
                 '  <div class="card card-body">' +
                 '  <div class="form-group">' +
-                '   <input type="text" class="form-control" id="name" placeholder="Tên pin" value="' + (marker.name ? marker.name : name) + '">' +
+                '   <input type="text" class="form-control" id="name" placeholder="Tên pin" value="' + (marker.name !== undefined ? marker.name : '') + '">' +
                 '  </div>' +
                 '<button type="button" class="btn btn-primary" data-id="' + id + '" id="savePin">Lưu lại</button>' +
                 '  </div>' +
@@ -135,8 +135,6 @@
 
             if(marker.name) {
                 markerContent = '<h5>Tên: ' + marker.name + '</h5>' + markerContent;
-            } else if(name) {
-                markerContent = '<h5>Tên: ' + name + '</h5>' + markerContent;
             }
 
             infowindow = setContentInfoWindow(
