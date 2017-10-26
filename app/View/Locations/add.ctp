@@ -65,6 +65,10 @@
     }
 
     function placeMarker(map, location) {
+        if(markers.length >= 3) {
+            return;
+        }
+
         var marker = new google.maps.Marker({
            position: location,
            map: map,

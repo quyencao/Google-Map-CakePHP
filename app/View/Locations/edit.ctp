@@ -87,6 +87,10 @@
     }
     
     function addMarker(map, location, color) {
+        if(markers.length >= 3) {
+            return;
+        }
+
         var id = generateUniqueId();
         var marker = new google.maps.Marker({
             position: location,
