@@ -1,6 +1,8 @@
 <?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css'); ?>
 <?= $this->Html->css('font-awesome.min'); ?>
-<?= $this->Html->script("http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js", false); ?>
+<?= $this->Html->script("https://code.jquery.com/jquery-3.2.1.min.js", false); ?>
+<?= $this->Html->script("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js", false); ?>
+<?= $this->Html->script("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js", false); ?>
 <?= $this->Html->script('http://maps.google.com/maps/api/js?key=AIzaSyALRT24edC7GaVGvOa8jABOvq4g1I20JZQ&libraries=places&sensor=true', false); ?>
 <?= $this->Html->script('jscolor.min'); ?>
 <div class="locations form container">
@@ -56,8 +58,8 @@
         <?php foreach ($location['Pin'] as $index => $pin): ?>
             addMarker(map, {
                 lat: <?php echo $pin['latitude']; ?>,
-                lng: <?php echo $pin['longitude']; ?>
-            }, '<?php echo $pin['color']; ?>');
+                lng: <?php echo $pin['longitude']; ?>,
+            }, '<?php echo $pin['color']; ?>', '<?php echo $pin['name']; ?>');
         <?php endforeach; ?>
 
         // Delete marker event
@@ -69,6 +71,13 @@
 
             $('#changeColorMarker').on('click', function () {
                 changeColorMarker($(this).data('id'));
+            });
+
+            $('#savePin').on('click', function () {
+               var value = $('#name').val();
+               var id = $(this).data('id');
+               changeNameMarker(id, value);
+               infowindow.close();
             });
         });
     }
@@ -86,7 +95,7 @@
         document.getElementById('LocationLongitude').value = place.geometry.location.lng();
     }
     
-    function addMarker(map, location, color) {
+    function addMarker(map, location, color, name) {
         if(markers.length >= 3) {
             return;
         }
@@ -99,7 +108,8 @@
             draggable: true,
             id: id,
             icon: getPinImage(color),
-            color: color
+            color: color,
+            name: name
         });
 
         marker.addListener('dragend', function () {
@@ -107,12 +117,32 @@
         });
 
         marker.addListener('click', function (event) {
+            var markerContent =
+                '<h5>Vĩ độ: ' + event.latLng.lat() +  '</h5><h5>Kinh độ: ' + event.latLng.lng() +  '</h5>' +
+                '<button id="deleteMarker" data-id="' + id + '" type="button" class="btn btn-outline-danger mr-2"><i class="fa fa-trash" aria-hidden="true"></i></button>' +
+                '<button id="changeColorMarker" data-id="' + id + '" type="button" class="btn btn-outline-info"><i class="fa fa-cog" aria-hidden="true"></i></button>' +
+                '  <a class="btn btn-primary ml-2" data-toggle="collapse" href="#collapse" aria-expanded="false" aria-controls="collapseExample">' +
+                '    <i class="fa fa-cog" aria-hidden="true"></i>' +
+                '  </a>' +
+                '<div class="collapse mt-2" id="collapse">' +
+                '  <div class="card card-body">' +
+                '  <div class="form-group">' +
+                '   <input type="text" class="form-control" id="name" placeholder="Tên pin" value="' + (marker.name ? marker.name : name) + '">' +
+                '  </div>' +
+                '<button type="button" class="btn btn-primary" data-id="' + id + '" id="savePin">Lưu lại</button>' +
+                '  </div>' +
+                '</div>';
+
+            if(marker.name) {
+                markerContent = '<h5>Tên: ' + marker.name + '</h5>' + markerContent;
+            } else if(name) {
+                markerContent = '<h5>Tên: ' + name + '</h5>' + markerContent;
+            }
+
             infowindow = setContentInfoWindow(
-                '<h5>Vĩ độ: ' + event.latLng.lat() +  '</h5><h5>Kinh độ: ' + event.latLng.lng() +  '</h5>'
-                + '<button id="deleteMarker" data-id="' + id + '" type="button" class="btn btn-outline-danger mr-2"><i class="fa fa-trash" aria-hidden="true"></i></button>'
-                + '<button id="changeColorMarker" data-id="' + id + '" type="button" class="btn btn-outline-info"><i class="fa fa-cog" aria-hidden="true"></i></button>'
-        );
-        infowindow.open(map, marker);
+                markerContent
+            );
+            infowindow.open(map, marker);
         });
 
         markers.push(marker);
@@ -154,6 +184,12 @@
         marker.color = pinColor;
         marker.setIcon(getPinImage(pinColor));
     }
+
+    function changeNameMarker(id, value) {
+        var index = markers.findIndex(m => m.id == id);
+        var marker = markers[index];
+        marker.name = value;
+    }
     
     function generateUniqueId() {
         return '_' + Math.random().toString(36).substr(2, 9);
@@ -170,7 +206,8 @@
             pins[i] = {
                 latitude: markers[i].internalPosition.lat(),
                 longitude: markers[i].internalPosition.lng(),
-                color: markers[i].color
+                color: markers[i].color,
+                name: markers[i].name
             }
         }
 
