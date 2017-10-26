@@ -43,7 +43,7 @@
         map = new google.maps.Map(document.getElementById("map"),mapOptions);
 
         google.maps.event.addListener(map, 'click', function (event) {
-            placeNewMarker(map, event.latLng);
+            addMarker(map, event.latLng, pinColor);
         });
 
         autocomplete = new google.maps.places.Autocomplete(
@@ -63,9 +63,12 @@
         // Delete marker event
         google.maps.event.addListener(infowindow, 'domready', function () {
 
-            $("#deleteMarker").click(function() {
-
+            $("#deleteMarker").on('click', function() {
                 deleteMarker($(this).data('id'));
+            });
+
+            $('#changeColorMarker').on('click', function () {
+                changeColorMarker($(this).data('id'));
             });
         });
     }
@@ -84,7 +87,7 @@
     }
     
     function addMarker(map, location, color) {
-        var id = Date.now();
+        var id = generateUniqueId();
         var marker = new google.maps.Marker({
             position: location,
             map: map,
@@ -102,9 +105,10 @@
         marker.addListener('click', function (event) {
             infowindow = setContentInfoWindow(
                 '<h5>Vĩ độ: ' + event.latLng.lat() +  '</h5><h5>Kinh độ: ' + event.latLng.lng() +  '</h5>'
-                + '<button id="deleteMarker" data-id="' + id + '" type="button" class="btn btn-outline-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>'
-            );
-            infowindow.open(map, marker);
+                + '<button id="deleteMarker" data-id="' + id + '" type="button" class="btn btn-outline-danger mr-2"><i class="fa fa-trash" aria-hidden="true"></i></button>'
+                + '<button id="changeColorMarker" data-id="' + id + '" type="button" class="btn btn-outline-info"><i class="fa fa-cog" aria-hidden="true"></i></button>'
+        );
+        infowindow.open(map, marker);
         });
 
         markers.push(marker);
@@ -128,10 +132,6 @@
         return infowindow;
     }
 
-    function placeNewMarker(map, location) {
-        var marker = addMarker(map, location, pinColor);
-    }
-
     function getPinImage(color) {
         var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + color,
             new google.maps.Size(21, 34),
@@ -142,6 +142,17 @@
 
     function changeColorPin(color) {
         pinColor = color.toHEXString().substr(1);
+    }
+
+    function changeColorMarker(id) {
+        var index = markers.findIndex(m => m.id == id);
+        var marker = markers[index];
+        marker.color = pinColor;
+        marker.setIcon(getPinImage(pinColor));
+    }
+    
+    function generateUniqueId() {
+        return '_' + Math.random().toString(36).substr(2, 9);
     }
 
     function updateLocation(event) {
