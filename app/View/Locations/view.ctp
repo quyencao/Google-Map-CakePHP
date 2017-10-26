@@ -1,9 +1,9 @@
 <?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css'); ?>
 <?= $this->Html->script("http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js", false); ?>
 <?= $this->Html->script('http://maps.google.com/maps/api/js?key=AIzaSyALRT24edC7GaVGvOa8jABOvq4g1I20JZQ&libraries=places', false); ?>
-<div class="locations view container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-4">
+        <div class="col-2">
             <div class="card border-info text-primary">
                 <h4 class="card-header">Địa điểm</h4>
                 <div class="card-body">
@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="col">
-            <div id="map" style="width: 100%; height: 350px"></div>
+            <div id="map" style="width: 100%; height: 85vh"></div>
         </div>
     </div>
 </div>

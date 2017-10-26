@@ -15,7 +15,7 @@
             echo $this->Form->input('latitude', array('type' => 'hidden'));
             echo $this->Form->input('longitude', array('type' => 'hidden'));
         ?>
-        <div id="map" class="form-group" style="width: 100%;height: 400px"></div>
+        <div id="map" class="form-group" style="width: 100%;height: 600px"></div>
 	</fieldset>
 <?php
     echo $this->Form->button('Lưu địa điểm', array('type' => 'submit', 'class' => 'btn btn-primary add-location'));
