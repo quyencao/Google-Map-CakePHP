@@ -1,7 +1,8 @@
 <?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css'); ?>
+<?= $this->Html->css('bootstrap-colorpicker.min'); ?>
 <?= $this->Html->script("http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js", false); ?>
 <?= $this->Html->script('http://maps.google.com/maps/api/js?key=AIzaSyALRT24edC7GaVGvOa8jABOvq4g1I20JZQ&libraries=places&sensor=true', false); ?>
-<?= $this->Html->script('jscolor.min'); ?>
+<?= $this->Html->script('bootstrap-colorpicker.min'); ?>
 <div class="locations form container">
 <?php echo $this->Form->create('Location'); ?>
 	<fieldset>
@@ -20,7 +21,7 @@
 <?php
     echo $this->Form->button('Lưu địa điểm', array('type' => 'submit', 'class' => 'btn btn-primary add-location'));
 ?>
-    <button class="btn text-white jscolor {valueElement:null, value:'FE7569', onFineChange:'changeColorPin(this)'}">Chọn màu pin</button>
+    <button class="btn text-white" id="colorPicker" style="background-color: #FE7569">Chọn màu pin</button>
 </div>
 
 <script>
@@ -49,6 +50,12 @@
         );
 
         autocomplete.addListener('place_changed', onPlaceChanged);
+
+        $('#colorPicker').colorpicker().on('changeColor', function (event) {
+            var color = event.color.toString('Hex');
+            $(this).css({ 'background-color' : color });
+            pinColor = color.substr(1);
+        });
     }
 
     function onPlaceChanged() {
@@ -104,10 +111,6 @@
         return pinImage;
     }
 
-    function changeColorPin(color) {
-        pinColor = color.toHEXString().substr(1);
-    }
-    
     function addLocation(event) {
         event.preventDefault();
 

@@ -1,10 +1,11 @@
 <?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css'); ?>
 <?= $this->Html->css('font-awesome.min'); ?>
+<?= $this->Html->css('bootstrap-colorpicker.min'); ?>
 <?= $this->Html->script("https://code.jquery.com/jquery-3.2.1.min.js", false); ?>
 <?= $this->Html->script("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js", false); ?>
 <?= $this->Html->script("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js", false); ?>
 <?= $this->Html->script('http://maps.google.com/maps/api/js?key=AIzaSyALRT24edC7GaVGvOa8jABOvq4g1I20JZQ&libraries=places&sensor=true', false); ?>
-<?= $this->Html->script('jscolor.min'); ?>
+<?= $this->Html->script('bootstrap-colorpicker.min'); ?>
 <div class="locations form container">
     <?php echo $this->Form->create('Location'); ?>
     <fieldset>
@@ -24,7 +25,7 @@
     echo $this->Form->button('Lưu địa điểm', array('type' => 'submit', 'class' => 'btn btn-primary add-location'));
     ?>
     <button type="button" class="btn btn-outline-danger" id="clear-markers">Xóa tất cả marker</button>
-    <button class="btn text-white jscolor {valueElement:null, value:'FE7569', onFineChange:'changeColorPin(this)'}">Chọn màu pin</button>
+    <button class="btn text-white" id="newMarkerColorpicker" style="background-color: #FE7569">Chọn màu pin</button>
 </div>
 
 <script>
@@ -62,6 +63,12 @@
             }, '<?php echo $pin['color']; ?>', '<?php echo $pin['name']; ?>');
         <?php endforeach; ?>
 
+        // Setup color picker
+        $('#newMarkerColorpicker').colorpicker().on('changeColor', function (event) {
+            $(this).css('background-color', event.color.toString('Hex'));
+            pinColor = event.color.toString('Hex').substr(1);
+        });
+
         // Delete marker event
         google.maps.event.addListener(infowindow, 'domready', function () {
 
@@ -69,15 +76,19 @@
                 deleteMarker($(this).data('id'));
             });
 
-            $('#changeColorMarker').on('click', function () {
-                changeColorMarker($(this).data('id'));
-            });
-
             $('#savePin').on('click', function () {
                var value = $('#name').val();
                var id = $(this).data('id');
                changeNameMarker(id, value);
                infowindow.close();
+            });
+
+            $('#markerColorpicker').colorpicker().on('changeColor', function (event) {
+                var color = event.color.toString('HEX');
+                var markerId = $(this).data('id');
+
+                $(this).css({ 'background-color' : color });
+                changeColorMarker(markerId, color.substr(1));
             });
         });
     }
@@ -120,8 +131,8 @@
             var markerContent =
                 '<h5>Vĩ độ: ' + event.latLng.lat() +  '</h5><h5>Kinh độ: ' + event.latLng.lng() +  '</h5>' +
                 '<button id="deleteMarker" data-id="' + id + '" type="button" class="btn btn-outline-danger mr-2"><i class="fa fa-trash" aria-hidden="true"></i></button>' +
-                '<button id="changeColorMarker" data-id="' + id + '" type="button" class="btn btn-outline-info"><i class="fa fa-cog" aria-hidden="true"></i></button>' +
-                '  <a class="btn btn-primary ml-2" data-toggle="collapse" href="#collapse" aria-expanded="false" aria-controls="collapseExample">' +
+                '<button class="btn text-white" data-id="' + id + '" id="markerColorpicker"><i class="fa fa-eyedropper" aria-hidden="true"></i></button>' +
+                '  <a class="btn btn-outline-warning ml-2" data-toggle="collapse" href="#collapse" aria-expanded="false" aria-controls="collapseExample">' +
                 '    <i class="fa fa-cog" aria-hidden="true"></i>' +
                 '  </a>' +
                 '<div class="collapse mt-2" id="collapse">' +
@@ -172,15 +183,11 @@
         return pinImage;
     }
 
-    function changeColorPin(color) {
-        pinColor = color.toHEXString().substr(1);
-    }
-
-    function changeColorMarker(id) {
+    function changeColorMarker(id, color) {
         var index = markers.findIndex(m => m.id == id);
         var marker = markers[index];
-        marker.color = pinColor;
-        marker.setIcon(getPinImage(pinColor));
+        marker.color = color;
+        marker.setIcon(getPinImage(color));
     }
 
     function changeNameMarker(id, value) {
