@@ -25,127 +25,128 @@
 </div>
 
 <script>
-    var map;
-    var autocomplete;
-    var infowindow;
-    var markers = [];
-    var pinColor = "FE7569";
+    $(document).ready(function() {
+        var map;
+        var autocomplete;
+        var infowindow;
+        var markers = [];
+        var pinColor = "FE7569";
 
-    function initialize()
-    {
-        var mapOptions = {
-            center: new google.maps.LatLng(10.771971, 106.697845),
-            zoom: 15,
-            mapTypeId: 'satellite'
-        };
+        function initialize() {
+            var mapOptions = {
+                center: new google.maps.LatLng(10.771971, 106.697845),
+                zoom: 15,
+                mapTypeId: 'satellite'
+            };
 
-        map = new google.maps.Map(document.getElementById("map"),mapOptions);
+            map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-        google.maps.event.addListener(map, 'click', function (event) {
-           placeMarker(map, event.latLng);
-        });
+            google.maps.event.addListener(map, 'rightclick', function (event) {
+                placeMarker(map, event.latLng);
+            });
 
-        autocomplete = new google.maps.places.Autocomplete(
-          document.getElementById('LocationAddress')
-        );
+            autocomplete = new google.maps.places.Autocomplete(
+                document.getElementById('LocationAddress')
+            );
 
-        autocomplete.addListener('place_changed', onPlaceChanged);
+            autocomplete.addListener('place_changed', onPlaceChanged);
 
-        $('#colorPicker').colorpicker().on('changeColor', function (event) {
-            var color = event.color.toString('Hex');
-            $(this).css({ 'background-color' : color });
-            pinColor = color.substr(1);
-        });
-    }
-
-    function onPlaceChanged() {
-        var place = autocomplete.getPlace();
-        if (place.geometry) {
-            map.panTo(place.geometry.location);
-            map.setZoom(15);
-        } else {
-            document.getElementById('LocationAddress').placeholder = 'Enter a city';
+            $('#colorPicker').colorpicker().on('changeColor', function (event) {
+                var color = event.color.toString('Hex');
+                $(this).css({'background-color': color});
+                pinColor = color.substr(1);
+            });
         }
 
-        document.getElementById('LocationLatitude').value = place.geometry.location.lat();
-        document.getElementById('LocationLongitude').value = place.geometry.location.lng();
-    }
-
-    function placeMarker(map, location) {
-        if(markers.length >= 3) {
-            return;
-        }
-
-        var marker = new google.maps.Marker({
-           position: location,
-           map: map,
-           animation: google.maps.Animation.DROP,
-           draggable: true,
-           icon: getPinImage(),
-           color: pinColor
-        });
-
-        marker.addListener('click', function () {
-            createAndShowInfowindow(location, marker);
-        });
-
-        createAndShowInfowindow(location, marker);
-        markers.push(marker);
-    }
-    
-    function createAndShowInfowindow(location, marker) {
-        if(infowindow) {
-            infowindow.close();
-        }
-        infowindow = new google.maps.InfoWindow({
-            content: '<h6>Vĩ độ: ' + location.lat() +  '</h6><h6>Kinh độ: ' + location.lng() +  '</h6>'
-        });
-        infowindow.open(map, marker);
-    }
-
-    function getPinImage() {
-        var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
-            new google.maps.Size(21, 34),
-            new google.maps.Point(0,0),
-            new google.maps.Point(10, 34));
-        return pinImage;
-    }
-
-    function addLocation(event) {
-        event.preventDefault();
-
-        var formData = new FormData($('#LocationAddForm')[0]);
-
-        var pins = {};
-
-        for(var i = 0; i < markers.length; i++) {
-            pins[i] = {
-                latitude: markers[i].internalPosition.lat(),
-                longitude: markers[i].internalPosition.lng(),
-                color: markers[i].color
+        function onPlaceChanged() {
+            var place = autocomplete.getPlace();
+            if (place.geometry) {
+                map.panTo(place.geometry.location);
+                map.setZoom(15);
+            } else {
+                document.getElementById('LocationAddress').placeholder = 'Enter a city';
             }
+
+            document.getElementById('LocationLatitude').value = place.geometry.location.lat();
+            document.getElementById('LocationLongitude').value = place.geometry.location.lng();
         }
 
-        $.ajax({
-           type: 'POST',
-           url: '/locations/add',
-           data: {
-               Location: {
-                   address: formData.get('data[Location][address]'),
-                   latitude: formData.get('data[Location][latitude]'),
-                   longitude: formData.get('data[Location][longitude]'),
-               },
-               Pin: pins
-           },
-           success: function (message) {
-               if (message.status === 'SUCCESS') {
-                    window.location = '<?php echo $this->Html->url(array('controller' => 'locations', 'action' => 'index')); ?>';
-               }
-           }
-        });
-    }
+        function placeMarker(map, location) {
+            if (markers.length >= 3) {
+                return;
+            }
 
-    google.maps.event.addDomListener(window, 'load', initialize);
-    
-    $('#LocationAddForm').on('submit', addLocation);
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                animation: google.maps.Animation.DROP,
+                draggable: true,
+                icon: getPinImage(),
+                color: pinColor
+            });
+
+            marker.addListener('click', function () {
+                createAndShowInfowindow(location, marker);
+            });
+
+            createAndShowInfowindow(location, marker);
+            markers.push(marker);
+        }
+
+        function createAndShowInfowindow(location, marker) {
+            if (infowindow) {
+                infowindow.close();
+            }
+            infowindow = new google.maps.InfoWindow({
+                content: '<h6>Vĩ độ: ' + location.lat() + '</h6><h6>Kinh độ: ' + location.lng() + '</h6>'
+            });
+            infowindow.open(map, marker);
+        }
+
+        function getPinImage() {
+            var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
+                new google.maps.Size(21, 34),
+                new google.maps.Point(0, 0),
+                new google.maps.Point(10, 34));
+            return pinImage;
+        }
+
+        function addLocation(event) {
+            event.preventDefault();
+
+            var formData = new FormData($('#LocationAddForm')[0]);
+
+            var pins = {};
+
+            for (var i = 0; i < markers.length; i++) {
+                pins[i] = {
+                    latitude: markers[i].internalPosition.lat(),
+                    longitude: markers[i].internalPosition.lng(),
+                    color: markers[i].color
+                }
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/locations/add',
+                data: {
+                    Location: {
+                        address: formData.get('data[Location][address]'),
+                        latitude: formData.get('data[Location][latitude]'),
+                        longitude: formData.get('data[Location][longitude]'),
+                    },
+                    Pin: pins
+                },
+                success: function (message) {
+                    if (message.status === 'SUCCESS') {
+                        window.location = '<?php echo $this->Html->url(array('controller' => 'locations', 'action' => 'index')); ?>';
+                    }
+                }
+            });
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+
+        $('#LocationAddForm').on('submit', addLocation);
+    });
 </script>

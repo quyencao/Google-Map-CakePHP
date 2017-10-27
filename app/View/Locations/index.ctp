@@ -22,9 +22,9 @@
             <td><?php echo h($location['Location']['latitude']); ?>&nbsp;</td>
             <td><?php echo h($location['Location']['longitude']); ?>&nbsp;</td>
             <td class="actions">
-                <?php echo $this->Html->link(__('Xem'), array('action' => 'view', $location['Location']['id'])); ?>
-                <?php echo $this->Html->link(__('Sửa'), array('action' => 'edit', $location['Location']['id'])); ?>
-                <?php echo $this->Form->postLink(__('Xóa'), array('action' => 'delete', $location['Location']['id']), array('confirm' => __('Are you sure you want to delete # %s?', $location['Location']['id']))); ?>
+                <?php echo $this->Html->link(__('Xem'), array('action' => 'view', $location['Location']['id']), array('class' => 'btn btn-outline-info')); ?>
+                <?php echo $this->Html->link(__('Sửa'), array('action' => 'edit', $location['Location']['id']), array('class' => 'btn btn-outline-warning')); ?>
+                <?php echo $this->Form->postLink(__('Xóa'), array('action' => 'delete', $location['Location']['id']), array('class' => 'btn btn-outline-danger')); ?>
             </td>
         </tr>
     <?php endforeach; ?>
