@@ -1,11 +1,3 @@
-<?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css'); ?>
-<?= $this->Html->css('font-awesome.min'); ?>
-<?= $this->Html->css('bootstrap-colorpicker.min'); ?>
-<?= $this->Html->script("https://code.jquery.com/jquery-3.2.1.min.js", false); ?>
-<?= $this->Html->script("https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js", false); ?>
-<?= $this->Html->script("https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js", false); ?>
-<?= $this->Html->script('http://maps.google.com/maps/api/js?key=AIzaSyALRT24edC7GaVGvOa8jABOvq4g1I20JZQ&libraries=places', false); ?>
-<?= $this->Html->script('bootstrap-colorpicker.min'); ?>
 <div class="locations form container">
     <?php echo $this->Form->create('Location'); ?>
     <fieldset>
@@ -46,6 +38,11 @@
 
             google.maps.event.addListener(map, 'rightclick', function (event) {
                 addMarker(map, {lat: event.latLng.lat(), lng: event.latLng.lng()}, defaultColor, false);
+            });
+
+            google.maps.event.addListener(map, 'click', function (event) {
+                setAllMarkersVisible();
+                infowindow.close();
             });
 
             autocomplete = new google.maps.places.Autocomplete(
@@ -99,8 +96,6 @@
                     }
                 });
             });
-
-
         }
 
         function setMarkerVisible(id) {
@@ -112,17 +107,23 @@
             }
         }
 
+        function setAllMarkersVisible() {
+            for(var i = 0; i < markers.length; i++) {
+                markers[i].setVisible(true);
+            }
+        }
+
         function onPlaceChanged() {
             var place = autocomplete.getPlace();
             if (place.geometry) {
                 map.panTo(place.geometry.location);
                 map.setZoom(15);
             } else {
-                document.getElementById('LocationAddress').placeholder = 'Enter a city';
+                $('#LocationAddress').attr('placeholder', 'Enter a city');
             }
 
-            document.getElementById('LocationLatitude').value = place.geometry.location.lat();
-            document.getElementById('LocationLongitude').value = place.geometry.location.lng();
+            $('#LocationLatitude').val(place.geometry.location.lat());
+            $('#LocationLongitude').val(place.geometry.location.lng());
         }
 
         function addMarker(map, location, color, visible, name) {
@@ -144,13 +145,10 @@
             });
 
             marker.addListener('click', function () {
-
                 var markerContent = getContentInfoWindow(marker);
-
                 infowindow = setContentInfoWindow(
                     markerContent
                 );
-
                 infowindow.open(map, marker);
             });
 
@@ -162,8 +160,9 @@
                 setContentInfoWindow(contentInfowindow);
                 infowindow.open(map, marker);
 
-                google.maps.event.addListener(infowindow, 'closeclick', function () {
+                var event = google.maps.event.addListener(infowindow, 'closeclick', function () {
                     marker.setVisible(true);
+                    google.maps.event.removeListener(event);
                 });
             }
 
@@ -182,15 +181,19 @@
                 infowindow.close();
             }
             infowindow.setContent(content);
-
             return infowindow;
         }
 
         function getContentInfoWindow(marker) {
             var id = marker.id;
             var markerContent =
-                '<h5>Vĩ độ: ' + marker.position.lat() + '</h5><h5>Kinh độ: ' + marker.position.lng() + '</h5>' +
-                '<button id="deleteMarker" data-id="' + id + '" type="button" class="btn btn-outline-danger mr-2"><i class="fa fa-trash" aria-hidden="true"></i></button>' +
+                '<h5>Vĩ độ: ' + marker.position.lat() + '</h5><h5>Kinh độ: ' + marker.position.lng() + '</h5>';
+
+            if(marker.visible) {
+                markerContent += '<button id="deleteMarker" data-id="' + id + '" type="button" class="btn btn-outline-danger mr-2"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+            }
+
+            markerContent +=
                 '<button class="btn btn-outline-info mr-2" data-id="' + id + '" id="markerColorpicker"><i class="fa fa-eyedropper" aria-hidden="true"></i></button>' +
                 '  <a class="btn btn-outline-warning" data-toggle="collapse" href="#collapse" aria-expanded="false" aria-controls="collapseExample">' +
                 '    <i class="fa fa-cog" aria-hidden="true"></i>' +

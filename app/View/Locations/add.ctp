@@ -1,8 +1,3 @@
-<?= $this->Html->css('https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css'); ?>
-<?= $this->Html->css('bootstrap-colorpicker.min'); ?>
-<?= $this->Html->script("http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js", false); ?>
-<?= $this->Html->script('http://maps.google.com/maps/api/js?key=AIzaSyALRT24edC7GaVGvOa8jABOvq4g1I20JZQ&libraries=places&sensor=true', false); ?>
-<?= $this->Html->script('bootstrap-colorpicker.min'); ?>
 <div class="locations form container">
 <?php echo $this->Form->create('Location'); ?>
 	<fieldset>

@@ -35,7 +35,8 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
             height: 25px;
         }
     </style>
-	<?php
+	<?= $this->element('head'); ?>
+    <?php
 		echo $this->Html->meta('icon');
 
 //		echo $this->Html->css('cake.generic');
